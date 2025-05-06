@@ -1,26 +1,35 @@
 #include <stddef.h>
+#include <stdlib.h>
 #include <string.h>
+#include "align.h"
 
-static unsigned char *line_buffer;
-static size_t line_buffer_length;
-static size_t line_offset;
+#ifndef DEFAULT_ALIGNMENT
+#define DEFAULT_ALIGNMENT (2*sizeof(void *))
+#endif
 
-void *lalloc(size_t size) {
-	/* First we have to check that we are not allocating memory outside of the 
-	 * maximum allowed */
+typedef struct {
+	unsigned char *line_buffer;
+	size_t line_buffer_length;
+	size_t line_offset;
+} TotalMem;
 
-	if (line_offset + size <= line_buffer_length) {
-		void *ptr = &line_buffer[line_offset];
-		line_offset += size;
+
+TotalMem *lalloc_init(TotalMem *memory_space, void *buffer, size_t buffer_length) {
+	memory_space->line_buffer = (unsigned char *) buffer;
+	memory_space->line_buffer_length = buffer_length;
+	memory_space->line_offset = 0;
+	return memory_space;
+}
+
+void *lalloc(TotalMem *memory_space, size_t size) {
+	uintptr_t current_offset = (uintptr_t) memory_space->line_buffer + (uintptr_t) memory_space->line_offset;
+	uintptr_t offset = align_forward(current_offset, DEFAULT_ALIGNMENT);
+	/* Check that we are not allocating memory over the maximum allowed */
+	if (memory_space->line_offset + size <= memory_space->line_buffer_length) {
+		void *ptr = &memory_space->line_buffer[offset];
+		memory_space->line_offset = offset + size;
 		memset(ptr, 0, size);
 		return ptr;
 	}
-
-	return NULL
+	return NULL;
 }
-
-void lfree(); 
-/* Does nothing, it is not possible to free a specific chunk of memory set with 
- * linear allocation, it's here for completeness sake */
-
-
