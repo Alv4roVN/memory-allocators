@@ -9,8 +9,9 @@ bool is_power_of_two(uintptr_t n) {
 }
 
 uintptr_t align_forward(uintptr_t ptr, size_t alignment) {
-    uintptr_t n, a, modulo;
+    assert(alignment > 0);
     assert(is_power_of_two(alignment));
+    uintptr_t n, a, modulo;
     n = ptr;
     a = (uintptr_t) alignment;
     // faster than calculating the modulo, same result because `a` is a power of 2
