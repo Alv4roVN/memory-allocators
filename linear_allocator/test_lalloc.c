@@ -31,4 +31,19 @@ int main() {
 	assert(ptr_test3 == NULL);
 	assert(memory_space.line_offset == test2_size);
 	printf("[+] Test 3 passed.\n");
+
+	// Test 4: lalloc_free resets the allocator
+	lalloc_free(&memory_space);
+	assert(memory_space.line_offset == 0);
+	printf("[+] Test 4 passed.\n");
+
+	// Test 5: Can allocate again after lalloc_free
+	size_t test5_size = 64;
+	void *ptr5 = lalloc(&memory_space, test5_size);
+	assert(ptr5 != NULL);
+	assert(memory_space.line_offset >= test5_size);
+	for (size_t i = 0; i < test5_size; ++i) {
+		assert(((unsigned char*)ptr5)[i] == 0); // ensure memory was zero-initialized
+	}
+	printf("[+] Test 5 passed.\n");
 }

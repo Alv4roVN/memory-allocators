@@ -30,3 +30,7 @@ void *lalloc(TotalMem *memory_space, size_t size) {
 	}
 	return NULL;
 }
+
+void lalloc_free(TotalMem *memory_space) {
+	memory_space->line_offset = 0;
+}

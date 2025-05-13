@@ -16,5 +16,6 @@ typedef struct {
 
 TotalMem *lalloc_init(TotalMem *memory_space, void *buffer, size_t buffer_length);
 void *lalloc(TotalMem *memory_space, size_t size);
+void lalloc_free(TotalMem *memory_space);
 
 #endif
